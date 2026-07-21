@@ -1821,9 +1821,9 @@
               <button class="btn" type="button" onclick="rangePreset('reset')">Reset</button>
             </div>
             <div class="range-edit-bar" id="range-edit-bar">
-              <div class="reseg reseg-fair" id="reseg-fair"><span class="reseg-label">Fair</span><span class="reseg-sub" id="reseg-sub-fair">0 &ndash; 55</span></div>
-              <div class="reseg reseg-good" id="reseg-good"><span class="reseg-label">Good</span><span class="reseg-sub" id="reseg-sub-good">56 &ndash; 83</span></div>
-              <div class="reseg reseg-excellent" id="reseg-excellent"><span class="reseg-label">Excellent</span><span class="reseg-sub" id="reseg-sub-exc">84+</span></div>
+              <div class="reseg reseg-fair" id="reseg-fair"><span class="reseg-label">Fair</span></div>
+              <div class="reseg reseg-good" id="reseg-good"><span class="reseg-label">Good</span></div>
+              <div class="reseg reseg-excellent" id="reseg-excellent"><span class="reseg-label">Excellent</span></div>
               <div class="range-handle" id="range-handle-1" onpointerdown="startRangeDrag(event,1)"></div>
               <div class="range-handle" id="range-handle-2" onpointerdown="startRangeDrag(event,2)"></div>
             </div>
@@ -2068,16 +2068,21 @@ function revertFactors() {
 }
 
 // ── performance range editing ──
+function updateLegend(b1, b2) {
+  const legs = document.querySelectorAll('.legend-range');
+  legs[0].textContent = '0' + DASH + b1;
+  legs[1].textContent = (b1 + 1) + DASH + b2;
+  legs[2].textContent = (b2 + 1) + DASH + '100';
+}
+
 function renderRangeEdit() {
   const s1 = editB1 + 0.5, s2 = editB2 + 0.5;
   document.getElementById('reseg-fair').style.width = s1 + '%';
   document.getElementById('reseg-good').style.width = (s2 - s1) + '%';
   document.getElementById('reseg-excellent').style.width = (100 - s2) + '%';
-  document.getElementById('reseg-sub-fair').textContent = '0' + DASH + editB1;
-  document.getElementById('reseg-sub-good').textContent = (editB1 + 1) + DASH + editB2;
-  document.getElementById('reseg-sub-exc').textContent = (editB2 + 1) + '+';
   document.getElementById('range-handle-1').style.left = s1 + '%';
   document.getElementById('range-handle-2').style.left = s2 + '%';
+  updateLegend(editB1, editB2);
 }
 
 let dragHandle = null;
@@ -2120,10 +2125,7 @@ function applyRangesToView() {
   document.querySelector('.range-seg-fair').style.width = s1 + '%';
   document.querySelector('.range-seg-good').style.width = (s2 - s1) + '%';
   document.querySelector('.range-seg-excellent').style.width = (100 - s2) + '%';
-  const legs = document.querySelectorAll('.legend-range');
-  legs[0].textContent = '0' + DASH + savedB1;
-  legs[1].textContent = (savedB1 + 1) + DASH + savedB2;
-  legs[2].textContent = (savedB2 + 1) + DASH + '100';
+  updateLegend(savedB1, savedB2);
 }
 
 function enterEditMode() {
@@ -2154,6 +2156,9 @@ function exitEditMode(save) {
       val.style.color = v === 0 ? 'var(--content-inactive)' : 'var(--content-standard)';
     });
     applyRangesToView();
+  } else {
+    // discard live edits: restore legend to last saved boundaries
+    updateLegend(savedB1, savedB2);
   }
   document.querySelector('.motive-ui').classList.remove('editing');
 }
