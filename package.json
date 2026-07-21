@@ -1,0 +1,13 @@
+{
+  "name": "custom-tags-prototype",
+  "version": "1.0.0",
+  "description": "Motive admin settings Custom Tags prototype",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'Static site — no build needed'",
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
