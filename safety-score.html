@@ -1955,13 +1955,8 @@ const DASH = ' \u2013 '; // en dash
 const STEP_MINUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>';
 const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/><line x1="8" y1="3" x2="8" y2="13"/></svg>';
 
-// Camera-default weight maps (each sums to 100)
-const DUAL_DEFAULT = {
-  'Cell phone': 16, 'Tailgating': 14, 'Stop sign violation': 11, 'Seat belt violation': 10,
-  'Speeding': 10, 'Distraction': 8, 'Hard brake': 6, 'Forward collision warning': 5,
-  'Unsafe lane change': 5, 'Cam obstruction': 4, 'Hard corner': 3, 'Smoking': 3,
-  'Unsafe parking': 3, 'Hard accel': 2
-};
+// Road-facing camera default weight map (sums to 100).
+// Dual-facing is the current default and is restored from the saved view-mode weighting.
 const ROAD_DEFAULT = {
   'Cell phone': 0, 'Tailgating': 20, 'Stop sign violation': 14, 'Seat belt violation': 0,
   'Speeding': 18, 'Distraction': 0, 'Hard brake': 12, 'Forward collision warning': 10,
@@ -2044,10 +2039,14 @@ function updateAlloc() {
   }
 
 function applyCameraDefault(type) {
-  const map = type === 'road' ? ROAD_DEFAULT : DUAL_DEFAULT;
   document.querySelectorAll('.factor-row').forEach(row => {
-    const name = row.querySelector('.factor-name').textContent.trim();
-    if (name in map) row.querySelector('.step-val').textContent = map[name];
+    if (type === 'dual') {
+      // Dual-facing is the current default: restore the saved view-mode weighting
+      row.querySelector('.step-val').textContent = row.querySelector('.donut span').textContent.trim();
+    } else {
+      const name = row.querySelector('.factor-name').textContent.trim();
+      if (name in ROAD_DEFAULT) row.querySelector('.step-val').textContent = ROAD_DEFAULT[name];
+    }
   });
   updateAlloc();
 }
