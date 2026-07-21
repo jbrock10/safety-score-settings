@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Safety Settings — Safety</title>
+<title>Safety Settings — Safety Score</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
@@ -325,7 +325,10 @@
     color: var(--content-subdued);
     font-weight: 400;
     cursor: pointer;
+    text-decoration: none;
   }
+
+  .header-breadcrumb a.crumb-parent:hover { color: var(--content-emphasis); }
 
   .header-breadcrumb .crumb-sep {
     color: var(--content-inactive);
@@ -340,7 +343,7 @@
   .content-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 0 24px 24px;
   }
 
   .content-scroll::-webkit-scrollbar { width: 8px; }
@@ -350,6 +353,7 @@
   .cards-column {
     max-width: 640px;
     margin: 0 auto;
+    padding-top: 24px;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -364,6 +368,11 @@
   }
 
   .card-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--bg-primary);
+    border-radius: var(--radius-s) var(--radius-s) 0 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -639,7 +648,7 @@
     margin: 0 auto;
   }
 
-  /* ─── SAFETY HUB ───────────────────────────────────────────── */
+  /* ─── SAFETY HUB ──────────────────────────���────────────────── */
   .header-action {
     margin-left: auto;
     width: 40px;
@@ -656,6 +665,394 @@
   }
 
   .header-action:hover { background: var(--bg-secondary); }
+
+  /* ─── SAFETY SCORE PAGE ────────────────────────────────────── */
+  .btn-primary {
+    background: var(--bg-bold-active);
+    border: 1px solid var(--bg-bold-active);
+    color: var(--content-on-bold);
+  }
+  .btn-primary:hover { background: var(--content-active); border-color: var(--content-active); }
+  .header .btn-primary { margin-left: auto; }
+
+  .factor-desc {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--content-subdued);
+  }
+
+  .score-total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--content-emphasis);
+  }
+
+  .factor-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 20px;
+  }
+  .factor-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
+  }
+
+  .factor-name {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--content-standard);
+  }
+
+  /* name + config-error warning icon */
+  .factor-name-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .factor-warn {
+    position: relative;
+    display: none;
+    align-items: center;
+    cursor: default;
+  }
+  .motive-ui.errors-flow .factor-warn { display: inline-flex; }
+  .factor-warn svg { display: block; }
+  .factor-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000000;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: -0.0084px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    width: 240px;
+    white-space: normal;
+    text-align: left;
+    z-index: 200;
+    pointer-events: none;
+  }
+  .factor-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #000000;
+    border-bottom: none;
+  }
+  .factor-warn:hover .factor-tooltip { display: block; }
+
+  /* mini donut: blue arc = value% of 100 total */
+  .donut {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: conic-gradient(var(--bg-bold-active) 0 calc(var(--pct) * 1%), #e6e6e6 calc(var(--pct) * 1%) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .donut::before {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+  }
+  .donut span {
+    position: relative;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--content-emphasis);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* positive score factors */
+  .pos-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .pos-row + .pos-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
+  }
+  .pos-name { color: var(--content-standard); }
+  .pos-value { color: var(--content-inactive); }
+
+  /* performance ranges */
+  .range-wrap { padding: 12px 20px 4px; }
+  .range-labels {
+    display: flex;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--content-subdued);
+  }
+  .range-labels span { display: block; }
+  .range-bar {
+    display: flex;
+    height: 36px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .range-seg-fair { background: #f76100; }
+  .range-seg-good { background: #00b4ff; }
+  .range-seg-excellent { background: #003aa5; }
+  .range-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--content-subdued);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .legend-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .legend-row + .legend-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
+  }
+  .legend-left { display: flex; align-items: center; gap: 8px; }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  .legend-name { color: var(--content-emphasis); }
+  .legend-range { color: var(--content-standard); font-feature-settings: 'tnum' 1; }
+
+  /* ─── EDIT MODE ────────────────────────────────────────────── */
+  .edit-only { display: none; }
+  .motive-ui.editing .view-only { display: none; }
+
+  /* blue header */
+  .header-view {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
+  .header-edit { display: none; }
+  .motive-ui.editing .header {
+    background: var(--bg-bold-active);
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2), 0px 0px 0px 1px rgba(0,0,0,0.06);
+  }
+  .motive-ui.editing .header .header-view { display: none; }
+  .motive-ui.editing .header .header-edit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
+  .header-edit-title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--content-on-bold);
+  }
+  .header-edit-actions { display: flex; align-items: center; gap: 12px; }
+
+  /* preset button rows */
+  .motive-ui.editing .preset-row { display: flex; }
+  .preset-row {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 20px 8px;
+  }
+  .preset-row .btn {
+    padding: 4px 8px;
+    border: 1px solid var(--stroke-standard);
+    border-radius: 2px;
+  }
+
+  /* factor + positive steppers */
+  .factor-stepper { display: none; align-items: center; gap: 8px; }
+  .motive-ui.editing .factor-stepper { display: flex; }
+  .step-btn {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--content-standard);
+    font-family: inherit;
+  }
+  .step-btn svg { display: block; }
+  .step-btn:hover { color: var(--content-active); }
+  .step-btn:disabled { color: var(--content-inactive); cursor: not-allowed; }
+  .step-val {
+    width: 52px;
+    height: 36px;
+    padding: 0 8px;
+    border: 1px solid var(--stroke-inactive);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--content-emphasis);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* generic edit-only element types */
+  .motive-ui.editing p.edit-only { display: block; }
+  .motive-ui.editing span.score-alloc.edit-only { display: inline; }
+
+  /* score total alloc */
+  .score-alloc.over { color: var(--content-negative); }
+  .alloc-label { font-weight: 400; }
+
+  /* performance ranges edit */
+  .motive-ui.editing .range-edit { display: block; }
+  .range-edit { display: none; padding: 12px 20px 4px; }
+  .range-edit-bar {
+    position: relative;
+    display: flex;
+    height: 56px;
+    border-radius: 4px;
+    overflow: visible;
+    margin-top: 4px;
+    touch-action: none;
+    user-select: none;
+  }
+  .reseg {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 12px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .reseg:first-child { border-radius: 4px 0 0 4px; }
+  .reseg:last-child { border-radius: 0 4px 4px 0; }
+  .reseg-fair { background: #f76100; }
+  .reseg-good { background: #00b4ff; }
+  .reseg-excellent { background: #003aa5; }
+  .reseg-label { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--content-on-bold); }
+  .reseg-sub { font-size: 12px; line-height: 16px; color: var(--content-on-bold); font-feature-settings: 'tnum' 1; }
+  .range-handle {
+    position: absolute;
+    top: -2px;
+    height: 60px;
+    width: 4px;
+    background: var(--bg-primary);
+    transform: translateX(-50%);
+    cursor: ew-resize;
+    z-index: 2;
+  }
+  .range-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transform: translate(-50%, -50%);
+  }
+
+  /* version history */
+  .version-entry { position: relative; }
+  .version-entry + .version-entry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
+  }
+  .version-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+    transition: background 0.1s;
+  }
+  .version-head:hover { background: rgba(0,0,0,0.02); }
+  .version-date { font-weight: 600; color: var(--content-emphasis); }
+  .version-author { color: var(--content-subdued); }
+  .version-more {
+    margin-left: auto;
+    color: var(--content-subdued);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .version-entry.open .version-more { display: none; }
+  .version-body { display: none; padding: 0 20px 14px; }
+  .version-entry.open .version-body { display: block; }
+  .vchange {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 3px 0;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .vchange-label { color: var(--content-subdued); }
+  .vchange-value { color: var(--content-subdued); font-feature-settings: 'tnum' 1; }
+  .vchange-group { margin-top: 12px; }
 
   .hub-card {
     background: var(--bg-primary);
@@ -964,7 +1361,7 @@
 
   .delete-btn:hover { background: rgba(0,0,0,0.06); color: var(--content-standard); }
 
-  /* ─── COLOR PICKER DROPDOWN ────────────────────────────────── */
+  /* ─���─ COLOR PICKER DROPDOWN ───────────────────���────────────── */
   .color-picker-dropdown {
     position: absolute;
     background: var(--bg-primary);
@@ -1115,7 +1512,7 @@
   /* ─── ICONS ────────────────────────────────────────────────── */
   .icon { display: inline-block; flex-shrink: 0; }
 
-  /* ─── DELETE CONFIRMATION MODAL ────────────────────────────────────────────── */
+  /* ─── DELETE CONFIRMATION MODAL ───����────────────────────────────────────────── */
   #delete-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1377,151 +1774,194 @@
 <!-- MAIN CONTENT -->
 <div class="main">
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-breadcrumb">
-      <span class="crumb-current">Safety</span>
+  <header class="header" id="page-header">
+    <div class="header-view">
+      <div class="header-breadcrumb">
+        <a class="crumb-parent" href="index.html">Safety</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">Safety Score</span>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="enterEditMode()">Edit</button>
     </div>
-    <button class="header-action" type="button" aria-label="Toggle panel">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="15" y1="4" x2="15" y2="20"/></svg>
-    </button>
+    <div class="header-edit">
+      <span class="header-edit-title">Edit Safety Score</span>
+      <div class="header-edit-actions">
+        <button class="btn btn-on-dark" type="button" onclick="exitEditMode(false)">Cancel</button>
+        <button class="btn btn-save" type="button" onclick="exitEditMode(true)">Save</button>
+      </div>
+    </div>
   </header>
 
   <!-- SCROLLABLE CONTENT -->
   <div class="content-scroll">
     <div class="cards-column">
 
-      <!-- Behavior Detection (link) -->
-      <a class="hub-card hub-card-link" href="behavior-detection.html">
-        <div class="hub-card-text">
-          <span class="card-title">Behavior Detection</span>
-          <p class="hub-card-desc">Choose which behaviors you'd like to detect, modify thresholds, and customize in-cab alerts for drivers to build your safety program.</p>
-        </div>
-        <span class="hub-card-chevron" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </span>
-      </a>
-
-      <!-- Safety Score (link) -->
-      <a class="hub-card hub-card-link" href="safety-score.html">
-        <div class="hub-card-text">
-          <span class="card-title">Safety Score</span>
-          <p class="hub-card-desc">[Customize your score with configurable score factors, positive points, and performance tiers.]</p>
-        </div>
-        <span class="hub-card-chevron" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </span>
-      </a>
-
-      <!-- Coaching (non-interactive) -->
+      <!-- UNSAFE SCORE FACTORS -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Coaching</span>
-          <button class="btn">Edit</button>
+          <span class="card-title">[Unsafe score factors]</span>
         </div>
         <div class="card-content">
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Allow Motive to automatically mark events as &lsquo;Coachable&rsquo;</span>
-              <span class="check-desc">Safety events can be marked &lsquo;Coachable&rsquo; either manually by someone in your company or automatically by Motive. <a class="inline-link">Learn More</a></span>
+          <p class="factor-desc view-only">[Define which unsafe behaviors impact scores by assigning point weights. Higher point values represent a bigger impact on the score.]</p>
+          <p class="factor-desc edit-only">[Distribute the impact of unsafe behaviors. Higher weights mean that specific behavior will have a larger influence on a driver&apos;s final score.]</p>
+          <div class="preset-row edit-only">
+            <button class="btn" type="button" onclick="applyCameraDefault('dual')">Dual-facing camera default</button>
+            <button class="btn" type="button" onclick="applyCameraDefault('road')">Road-facing camera default</button>
+            <button class="btn" type="button" onclick="revertFactors()">Revert</button>
+          </div>
+          <div class="score-total-row">
+            <span>Score total</span>
+            <span class="view-only">100 points</span>
+            <span class="edit-only score-alloc"><span class="alloc-used" id="alloc-used">100</span> / 100 <span class="alloc-label">points allocated</span></span>
+          </div>
+          <div class="factor-row"><span class="factor-name">Cell phone usage</span><span class="donut" style="--pct:16;"><span>16</span></span></div>
+          <div class="factor-row"><span class="factor-name">Close following</span><span class="donut" style="--pct:14;"><span>14</span></span></div>
+          <div class="factor-row"><span class="factor-name">Stop sign violations</span><span class="donut" style="--pct:11;"><span>11</span></span></div>
+          <div class="factor-row"><span class="factor-name">Seat belt violations</span><span class="donut" style="--pct:10;"><span>10</span></span></div>
+          <div class="factor-row"><span class="factor-name">Speeding</span><span class="donut" style="--pct:10;"><span>10</span></span></div>
+          <div class="factor-row"><span class="factor-name">Distraction</span><span class="donut" style="--pct:8;"><span>8</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard braking</span><span class="donut" style="--pct:6;"><span>6</span></span></div>
+          <div class="factor-row"><span class="factor-name">Forward collision warning</span><span class="donut" style="--pct:5;"><span>5</span></span></div>
+          <div class="factor-row"><span class="factor-name">Unsafe lane changing</span><span class="donut" style="--pct:5;"><span>5</span></span></div>
+          <div class="factor-row"><span class="factor-name">Camera obstruction</span><span class="donut" style="--pct:4;"><span>4</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard cornering</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
+          <div class="factor-row"><span class="factor-name">Smoking</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
+          <div class="factor-row"><span class="factor-name">Unsafe parking</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard accelerating</span><span class="donut" style="--pct:2;"><span>2</span></span></div>
+        </div>
+      </div>
+
+      <!-- POSITIVE SCORE FACTORS -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">[Positive score factors]</span>
+        </div>
+        <div class="card-content">
+          <p class="factor-desc">[Incentivize safe driving by awarding bonus points when drivers demonstrate positive driving behaviors.]</p>
+          <div class="pos-row" data-value="0"><span class="pos-name">Alert driving</span><span class="pos-value view-only">[Inactive]</span></div>
+          <div class="pos-row" data-value="0"><span class="pos-name">Safe distancing</span><span class="pos-value view-only">[Inactive]</span></div>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE RANGES -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Performance ranges</span>
+        </div>
+        <div class="card-content">
+          <p class="factor-desc view-only">Each block represents a performance range and the scores that fall within it.</p>
+          <p class="factor-desc edit-only">[Drag the handles to adjust where each performance range begins and ends.]</p>
+          <div class="range-wrap view-only">
+            <div class="range-labels">
+              <span style="width:55.5%;">Fair</span>
+              <span style="width:28%;">Good</span>
+              <span style="width:16.5%; text-align:right;">Excellent</span>
+            </div>
+            <div class="range-bar">
+              <span class="range-seg-fair" style="width:55.5%;"></span>
+              <span class="range-seg-good" style="width:28%;"></span>
+              <span class="range-seg-excellent" style="width:16.5%;"></span>
+            </div>
+            <div class="range-axis">
+              <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
             </div>
           </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Message drivers about coachable events</span>
+          <div class="range-edit edit-only">
+            <div class="preset-row" style="padding:0 0 12px;">
+              <button class="btn" type="button" onclick="rangePreset('motive')">Set to Motive Default</button>
+              <button class="btn" type="button" onclick="rangePreset('equal')">Split equally</button>
+              <button class="btn" type="button" onclick="rangePreset('reset')">Reset</button>
+            </div>
+            <div class="range-edit-bar" id="range-edit-bar">
+              <div class="reseg reseg-fair" id="reseg-fair"><span class="reseg-label">Fair</span></div>
+              <div class="reseg reseg-good" id="reseg-good"><span class="reseg-label">Good</span></div>
+              <div class="reseg reseg-excellent" id="reseg-excellent"><span class="reseg-label">Excellent</span></div>
+              <div class="range-handle" id="range-handle-1" onpointerdown="startRangeDrag(event,1)"></div>
+              <div class="range-handle" id="range-handle-2" onpointerdown="startRangeDrag(event,2)"></div>
+            </div>
+            <div class="range-axis">
+              <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
             </div>
           </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Show drivers their scores</span>
-            </div>
+          <div class="legend-row">
+            <span class="legend-left"><span class="legend-swatch" style="background:#f76100;"></span><span class="legend-name">Fair</span></span>
+            <span class="legend-range">0 &ndash; 55</span>
           </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Show drivers their safety events</span>
-            </div>
+          <div class="legend-row">
+            <span class="legend-left"><span class="legend-swatch" style="background:#00b4ff;"></span><span class="legend-name">Good</span></span>
+            <span class="legend-range">56 &ndash; 83</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-left"><span class="legend-swatch" style="background:#003aa5;"></span><span class="legend-name">Excellent</span></span>
+            <span class="legend-range">84 &ndash; 100</span>
           </div>
         </div>
       </div>
 
-      <!-- Dashcam (non-interactive) -->
+      <!-- VERSION HISTORY -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Dashcam</span>
-          <button class="btn">Edit</button>
+          <span class="card-title">Version history</span>
         </div>
-        <div class="card-content">
-          <div class="hub-subhead">General</div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">In-cab audio recording</span>
+        <div class="card-content" id="version-list">
+          <div class="version-entry open">
+            <div class="version-head" onclick="toggleVersion(this)">
+              <span class="version-date">Jul 15, 2026</span>
+              <span class="version-author">&middot; Alex Morgan</span>
+              <span class="version-more">&hellip;</span>
+            </div>
+            <div class="version-body">
+              <div class="vchange"><span class="vchange-label">Hard braking</span><span class="vchange-value">-2 points</span></div>
+              <div class="vchange"><span class="vchange-label">Close following</span><span class="vchange-value">+2 points</span></div>
+              <div class="vchange-group">
+                <div class="vchange"><span class="vchange-label">Fair</span><span class="vchange-value">0 - 66 &rarr; 0 - 70</span></div>
+                <div class="vchange"><span class="vchange-label">Good</span><span class="vchange-value">67 - 82 &rarr; 71 - 82</span></div>
+              </div>
             </div>
           </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Driver disconnected in-cab alert</span>
-              <span class="check-desc">Alert driver when their app disconnects from Vehicle Gateway</span>
+          <div class="version-entry">
+            <div class="version-head" onclick="toggleVersion(this)">
+              <span class="version-date">May 28, 2026</span>
+              <span class="version-author">&middot; Alex Morgan</span>
+              <span class="version-more">&hellip;</span>
+            </div>
+            <div class="version-body">
+              <div class="vchange"><span class="vchange-label">Distraction</span><span class="vchange-value">+1 points</span></div>
+              <div class="vchange"><span class="vchange-label">Smoking</span><span class="vchange-value">-1 points</span></div>
+              <div class="vchange-group">
+                <div class="vchange"><span class="vchange-label">Good</span><span class="vchange-value">65 - 82 &rarr; 67 - 82</span></div>
+              </div>
             </div>
           </div>
-
-          <div class="divider" style="margin: 0 20px;"></div>
-
-          <div class="hub-subhead">Driver-facing camera</div>
-          <div class="setting-row">
-            <span class="setting-label">Driver-facing camera recording</span>
-            <span class="setting-value">Off when engine is off</span>
-          </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Capture trip images every hour</span>
+          <div class="version-entry">
+            <div class="version-head" onclick="toggleVersion(this)">
+              <span class="version-date">Apr 9, 2026</span>
+              <span class="version-author">&middot; Alex Morgan</span>
+              <span class="version-more">&hellip;</span>
+            </div>
+            <div class="version-body">
+              <div class="vchange"><span class="vchange-label">Speeding</span><span class="vchange-value">+3 points</span></div>
+              <div class="vchange"><span class="vchange-label">Cell phone usage</span><span class="vchange-value">-3 points</span></div>
+              <div class="vchange-group">
+                <div class="vchange"><span class="vchange-label">Fair</span><span class="vchange-value">0 - 60 &rarr; 0 - 66</span></div>
+                <div class="vchange"><span class="vchange-label">Good</span><span class="vchange-value">61 - 82 &rarr; 65 - 82</span></div>
+              </div>
             </div>
           </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7.375" stroke="rgba(0,0,0,0.33)" stroke-width="1.25"/><path d="M7.5 7.5l5 5M12.5 7.5l-5 5" stroke="rgba(0,0,0,0.33)" stroke-width="1.25" stroke-linecap="round"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Vehicle engine-off recording</span>
+          <div class="version-entry">
+            <div class="version-head" onclick="toggleVersion(this)">
+              <span class="version-date">Feb 2, 2026</span>
+              <span class="version-author">&middot; Alex Morgan</span>
+              <span class="version-more">&hellip;</span>
             </div>
-          </div>
-          <div class="check-row">
-            <span class="check-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.5669 7.94194L8.95833 12.5505L6.43306 10.0253L7.31694 9.14139L8.95833 10.7828L12.6831 7.05806L13.5669 7.94194Z" fill="#1B6C2D"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10 3.75C6.54822 3.75 3.75 6.54822 3.75 10C3.75 13.4518 6.54822 16.25 10 16.25C13.4518 16.25 16.25 13.4518 16.25 10C16.25 6.54822 13.4518 3.75 10 3.75ZM2.5 10C2.5 5.85786 5.85786 2.5 10 2.5C14.1421 2.5 17.5 5.85786 17.5 10C17.5 14.1421 14.1421 17.5 10 17.5C5.85786 17.5 2.5 14.1421 2.5 10Z" fill="#1B6C2D"/></svg>
-            </span>
-            <div class="check-text">
-              <span class="check-title">Live stream</span>
+            <div class="version-body">
+              <div class="vchange"><span class="vchange-label">Initial configuration</span><span class="vchange-value">14 factors set</span></div>
+              <div class="vchange-group">
+                <div class="vchange"><span class="vchange-label">Fair</span><span class="vchange-value">0 - 60</span></div>
+                <div class="vchange"><span class="vchange-label">Good</span><span class="vchange-value">61 - 82</span></div>
+                <div class="vchange"><span class="vchange-label">Excellent</span><span class="vchange-value">83 - 100</span></div>
+              </div>
             </div>
-          </div>
-
-          <div class="divider" style="margin: 0 20px;"></div>
-
-          <div class="setting-row-inline">
-            <span class="setting-label">Video storage and quality</span>
-            <span class="count-badge">20</span>
-          </div>
-          <div class="setting-row">
-            <span class="setting-value">High video quality (Recommended)</span>
-            <span class="setting-label">Optimize video quality &middot; 100&ndash;120 hours</span>
           </div>
         </div>
       </div>
@@ -1552,6 +1992,268 @@ function selectProtoOption(n) {
   document.querySelectorAll('.proto-option').forEach(el => {
     el.classList.toggle('active', parseInt(el.dataset.option) === n);
   });
+  // Option 2 = "With errors" flow: reveal config-error warning icons
+  // and default the positive factors to enabled (some bonus points awarded).
+  const errors = n === 2;
+  document.querySelector('.motive-ui').classList.toggle('errors-flow', errors);
+  applyFlowPositives(errors);
+}
+
+// Positive factors default to enabled bonus points in the "with errors" flow,
+// and to [Inactive] in the happy path.
+function applyFlowPositives(errors) {
+  document.querySelectorAll('.pos-row').forEach(row => {
+    const v = errors ? 0.5 : 0;
+    row.dataset.value = v;
+    const val = row.querySelector('.pos-value');
+    if (!val) return;
+    val.textContent = v === 0 ? '[Inactive]' : '+' + v.toFixed(1) + ' point per event';
+    val.style.color = v === 0 ? 'var(--content-inactive)' : 'var(--content-standard)';
+  });
+}
+
+// ─── VERSION HISTORY ACCORDION (one open at a time) ───────────────────────────
+function toggleVersion(head) {
+  const entry = head.closest('.version-entry');
+  const isOpen = entry.classList.contains('open');
+  document.querySelectorAll('#version-list .version-entry').forEach(el => el.classList.remove('open'));
+  if (!isOpen) entry.classList.add('open');
+}
+
+// ─── EDIT MODE ────────────────────────────────────────────────────────────────
+const DASH = ' \u2013 '; // en dash
+const STEP_MINUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>';
+const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/><line x1="8" y1="3" x2="8" y2="13"/></svg>';
+
+// ─── CONFIG-ERROR WARNING ICONS ───────────────────────────────────────────────
+// Matches the "Config error" icon used in the unsafe behavior detection section.
+// Flags behaviors that are factored into the score but have event detection disabled.
+const WARNING_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49991 10V6H8.49991V10H7.49991Z" fill="#9F4100"/><path d="M7.49991 12V11H8.49991V12H7.49991Z" fill="#9F4100"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.28065 2.7377C8.69562 1.7798 7.30434 1.78022 6.7199 2.73849L1.23053 11.7389C0.620892 12.7385 1.34034 14.02 2.51114 14.02H13.4974C14.6686 14.02 15.388 12.7377 14.7776 11.7382L9.28065 2.7377ZM7.57364 3.25918C7.76846 2.93976 8.23221 2.93962 8.42722 3.25892L13.9241 12.2594C14.1276 12.5926 13.8878 13.02 13.4974 13.02H2.51114C2.12087 13.02 1.88106 12.5928 2.08427 12.2596L7.57364 3.25918Z" fill="#9F4100"/></svg>';
+const WARNING_TIP = '[This behavior is factored into the score but currently has event detection disabled.]';
+const WARNING_BEHAVIORS = ['Stop sign violations', 'Forward collision warning', 'Hard accelerating', 'Safe distancing'];
+
+(function initFactorWarnings() {
+  document.querySelectorAll('.factor-row .factor-name, .pos-row .pos-name').forEach(nameEl => {
+    if (!WARNING_BEHAVIORS.includes(nameEl.textContent.trim())) return;
+    const group = document.createElement('div');
+    group.className = 'factor-name-group';
+    nameEl.replaceWith(group);
+    group.appendChild(nameEl);
+    const warn = document.createElement('span');
+    warn.className = 'factor-warn';
+    warn.setAttribute('tabindex', '0');
+    warn.setAttribute('aria-label', WARNING_TIP);
+    warn.innerHTML = WARNING_SVG + '<span class="factor-tooltip">' + WARNING_TIP + '</span>';
+    group.appendChild(warn);
+  });
+})();
+
+// Road-facing camera default weight map (sums to 100).
+// Dual-facing is the current default and is restored from the saved view-mode weighting.
+const ROAD_DEFAULT = {
+  'Cell phone usage': 0, 'Close following': 20, 'Stop sign violations': 14, 'Seat belt violations': 0,
+  'Speeding': 18, 'Distraction': 0, 'Hard braking': 12, 'Forward collision warning': 10,
+  'Unsafe lane changing': 10, 'Camera obstruction': 0, 'Hard cornering': 6, 'Smoking': 0,
+  'Unsafe parking': 6, 'Hard accelerating': 4
+};
+
+// Performance range boundaries (saved = source of truth; edit = working copy)
+let savedB1 = 55, savedB2 = 83;
+let editB1 = 55, editB2 = 83;
+let factorSnapshot = {};
+
+function buildEditWidgets() {
+  // unsafe factor steppers
+  document.querySelectorAll('.factor-row').forEach(row => {
+    if (row.querySelector('.factor-stepper')) return;
+    const donut = row.querySelector('.donut');
+    donut.classList.add('view-only');
+    const st = document.createElement('span');
+    st.className = 'factor-stepper';
+    st.innerHTML = '<button class="step-btn" type="button" aria-label="Decrease">' + STEP_MINUS + '</button>'
+      + '<span class="step-val">0</span>'
+      + '<button class="step-btn" type="button" aria-label="Increase">' + STEP_PLUS + '</button>';
+    st.children[0].addEventListener('click', () => stepFactor(row, -1));
+    st.children[2].addEventListener('click', () => stepFactor(row, 1));
+    row.appendChild(st);
+  });
+  // positive steppers (0.5 increments)
+  document.querySelectorAll('.pos-row').forEach(row => {
+    if (row.querySelector('.factor-stepper')) return;
+    const st = document.createElement('span');
+    st.className = 'factor-stepper';
+    st.innerHTML = '<button class="step-btn" type="button" aria-label="Decrease">' + STEP_MINUS + '</button>'
+      + '<span class="step-val">0.0</span>'
+      + '<button class="step-btn" type="button" aria-label="Increase">' + STEP_PLUS + '</button>';
+    st.children[0].addEventListener('click', () => stepPositive(row, -0.5));
+    st.children[2].addEventListener('click', () => stepPositive(row, 0.5));
+    row.appendChild(st);
+  });
+}
+
+function syncSteppersFromView() {
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const v = parseInt(row.querySelector('.donut span').textContent, 10) || 0;
+    row.querySelector('.step-val').textContent = v;
+  });
+  document.querySelectorAll('.pos-row').forEach(row => {
+    const v = parseFloat(row.dataset.value) || 0;
+    row.querySelector('.step-val').textContent = v.toFixed(1);
+  });
+  updateAlloc();
+}
+
+function stepFactor(row, delta) {
+  const el = row.querySelector('.step-val');
+  let v = (parseInt(el.textContent, 10) || 0) + delta;
+  if (v < 0) v = 0;
+  el.textContent = v;
+  updateAlloc();
+}
+
+function stepPositive(row, delta) {
+  const el = row.querySelector('.step-val');
+  let v = (parseFloat(el.textContent) || 0) + delta;
+  if (v < 0) v = 0;
+  el.textContent = v.toFixed(1);
+}
+
+function updateAlloc() {
+  let sum = 0;
+  document.querySelectorAll('.factor-row .step-val').forEach(el => {
+    sum += parseInt(el.textContent, 10) || 0;
+  });
+  const used = document.getElementById('alloc-used');
+  used.textContent = sum;
+  const invalid = sum !== 100;
+  document.querySelector('.score-alloc').classList.toggle('over', invalid);
+  const saveBtn = document.querySelector('.header-edit .btn-save');
+  if (saveBtn) saveBtn.disabled = invalid;
+  }
+
+function applyCameraDefault(type) {
+  document.querySelectorAll('.factor-row').forEach(row => {
+    if (type === 'dual') {
+      // Dual-facing is the current default: restore the saved view-mode weighting
+      row.querySelector('.step-val').textContent = row.querySelector('.donut span').textContent.trim();
+    } else {
+      const name = row.querySelector('.factor-name').textContent.trim();
+      if (name in ROAD_DEFAULT) row.querySelector('.step-val').textContent = ROAD_DEFAULT[name];
+    }
+  });
+  updateAlloc();
+}
+
+function snapshotFactors() {
+  factorSnapshot = {};
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const name = row.querySelector('.factor-name').textContent.trim();
+    factorSnapshot[name] = parseInt(row.querySelector('.step-val').textContent, 10) || 0;
+  });
+}
+
+function revertFactors() {
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const name = row.querySelector('.factor-name').textContent.trim();
+    if (name in factorSnapshot) row.querySelector('.step-val').textContent = factorSnapshot[name];
+  });
+  updateAlloc();
+}
+
+// ── performance range editing ──
+function updateLegend(b1, b2) {
+  const legs = document.querySelectorAll('.legend-range');
+  legs[0].textContent = '0' + DASH + b1;
+  legs[1].textContent = (b1 + 1) + DASH + b2;
+  legs[2].textContent = (b2 + 1) + DASH + '100';
+}
+
+function renderRangeEdit() {
+  const s1 = editB1 + 0.5, s2 = editB2 + 0.5;
+  document.getElementById('reseg-fair').style.width = s1 + '%';
+  document.getElementById('reseg-good').style.width = (s2 - s1) + '%';
+  document.getElementById('reseg-excellent').style.width = (100 - s2) + '%';
+  document.getElementById('range-handle-1').style.left = s1 + '%';
+  document.getElementById('range-handle-2').style.left = s2 + '%';
+  updateLegend(editB1, editB2);
+}
+
+let dragHandle = null;
+function startRangeDrag(e, which) {
+  dragHandle = which;
+  e.preventDefault();
+  window.addEventListener('pointermove', onRangeDrag);
+  window.addEventListener('pointerup', endRangeDrag);
+}
+function onRangeDrag(e) {
+  if (!dragHandle) return;
+  const bar = document.getElementById('range-edit-bar');
+  const r = bar.getBoundingClientRect();
+  let pct = (e.clientX - r.left) / r.width * 100;
+  let v = Math.round(Math.max(0, Math.min(100, pct)));
+  if (dragHandle === 1) { editB1 = Math.max(1, Math.min(editB2 - 1, v)); }
+  else { editB2 = Math.max(editB1 + 1, Math.min(99, v)); }
+  renderRangeEdit();
+}
+function endRangeDrag() {
+  dragHandle = null;
+  window.removeEventListener('pointermove', onRangeDrag);
+  window.removeEventListener('pointerup', endRangeDrag);
+}
+
+function rangePreset(kind) {
+  if (kind === 'equal') { editB1 = 33; editB2 = 66; }
+  else if (kind === 'reset') { editB1 = savedB1; editB2 = savedB2; }
+  else { editB1 = 55; editB2 = 83; } // motive default
+  renderRangeEdit();
+}
+
+function applyRangesToView() {
+  savedB1 = editB1; savedB2 = editB2;
+  const s1 = savedB1 + 0.5, s2 = savedB2 + 0.5;
+  const lbls = document.querySelectorAll('.range-wrap .range-labels span');
+  lbls[0].style.width = s1 + '%';
+  lbls[1].style.width = (s2 - s1) + '%';
+  lbls[2].style.width = (100 - s2) + '%';
+  document.querySelector('.range-seg-fair').style.width = s1 + '%';
+  document.querySelector('.range-seg-good').style.width = (s2 - s1) + '%';
+  document.querySelector('.range-seg-excellent').style.width = (100 - s2) + '%';
+  updateLegend(savedB1, savedB2);
+}
+
+function enterEditMode() {
+  buildEditWidgets();
+  syncSteppersFromView();
+  editB1 = savedB1; editB2 = savedB2;
+  renderRangeEdit();
+  snapshotFactors();
+  document.querySelector('.motive-ui').classList.add('editing');
+  document.querySelector('.content-scroll').scrollTop = 0;
+}
+
+function exitEditMode(save) {
+  if (save) {
+    // unsafe factors -> donuts
+    document.querySelectorAll('.factor-row').forEach(row => {
+      const v = parseInt(row.querySelector('.step-val').textContent, 10) || 0;
+      const donut = row.querySelector('.donut');
+      donut.style.setProperty('--pct', v);
+      donut.querySelector('span').textContent = v;
+    });
+    // positive factors -> value labels
+    document.querySelectorAll('.pos-row').forEach(row => {
+      const v = parseFloat(row.querySelector('.step-val').textContent) || 0;
+      row.dataset.value = v;
+      const val = row.querySelector('.pos-value');
+      val.textContent = v === 0 ? '[Inactive]' : '+' + v.toFixed(1) + ' point per event';
+      val.style.color = v === 0 ? 'var(--content-inactive)' : 'var(--content-standard)';
+    });
+    applyRangesToView();
+  } else {
+    // discard live edits: restore legend to last saved boundaries
+    updateLegend(savedB1, savedB2);
+  }
+  document.querySelector('.motive-ui').classList.remove('editing');
 }
 </script>
 
