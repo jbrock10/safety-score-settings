@@ -648,7 +648,7 @@
     margin: 0 auto;
   }
 
-  /* ─── SAFETY HUB ───────────────────────────────────────────── */
+  /* ─── SAFETY HUB ──────────────────────────��────────────────── */
   .header-action {
     margin-left: auto;
     width: 40px;
@@ -717,6 +717,52 @@
     line-height: 20px;
     color: var(--content-standard);
   }
+
+  /* name + config-error warning icon */
+  .factor-name-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .factor-warn {
+    position: relative;
+    display: none;
+    align-items: center;
+    cursor: default;
+  }
+  .motive-ui.errors-flow .factor-warn { display: inline-flex; }
+  .factor-warn svg { display: block; }
+  .factor-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000000;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: -0.0084px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    width: 240px;
+    white-space: normal;
+    text-align: left;
+    z-index: 200;
+    pointer-events: none;
+  }
+  .factor-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #000000;
+    border-bottom: none;
+  }
+  .factor-warn:hover .factor-tooltip { display: block; }
 
   /* mini donut: blue arc = value% of 100 total */
   .donut {
@@ -1315,7 +1361,7 @@
 
   .delete-btn:hover { background: rgba(0,0,0,0.06); color: var(--content-standard); }
 
-  /* ─── COLOR PICKER DROPDOWN ───────────────────���────────────── */
+  /* ─���─ COLOR PICKER DROPDOWN ───────────────────���────────────── */
   .color-picker-dropdown {
     position: absolute;
     background: var(--bg-primary);
@@ -1946,6 +1992,8 @@ function selectProtoOption(n) {
   document.querySelectorAll('.proto-option').forEach(el => {
     el.classList.toggle('active', parseInt(el.dataset.option) === n);
   });
+  // Option 2 = "With errors" flow: reveal config-error warning icons
+  document.querySelector('.motive-ui').classList.toggle('errors-flow', n === 2);
 }
 
 // ─── VERSION HISTORY ACCORDION (one open at a time) ───────────────────────────
@@ -1960,6 +2008,29 @@ function toggleVersion(head) {
 const DASH = ' \u2013 '; // en dash
 const STEP_MINUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>';
 const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/><line x1="8" y1="3" x2="8" y2="13"/></svg>';
+
+// ─── CONFIG-ERROR WARNING ICONS ───────────────────────────────────────────────
+// Matches the "Config error" icon used in the unsafe behavior detection section.
+// Flags behaviors that are factored into the score but have event detection disabled.
+const WARNING_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49991 10V6H8.49991V10H7.49991Z" fill="#9F4100"/><path d="M7.49991 12V11H8.49991V12H7.49991Z" fill="#9F4100"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.28065 2.7377C8.69562 1.7798 7.30434 1.78022 6.7199 2.73849L1.23053 11.7389C0.620892 12.7385 1.34034 14.02 2.51114 14.02H13.4974C14.6686 14.02 15.388 12.7377 14.7776 11.7382L9.28065 2.7377ZM7.57364 3.25918C7.76846 2.93976 8.23221 2.93962 8.42722 3.25892L13.9241 12.2594C14.1276 12.5926 13.8878 13.02 13.4974 13.02H2.51114C2.12087 13.02 1.88106 12.5928 2.08427 12.2596L7.57364 3.25918Z" fill="#9F4100"/></svg>';
+const WARNING_TIP = '[This behavior is factored into the score but currently has event detection disabled.]';
+const WARNING_BEHAVIORS = ['Stop sign violations', 'Forward collision warning', 'Hard accelerating'];
+
+(function initFactorWarnings() {
+  document.querySelectorAll('.factor-row .factor-name').forEach(nameEl => {
+    if (!WARNING_BEHAVIORS.includes(nameEl.textContent.trim())) return;
+    const group = document.createElement('div');
+    group.className = 'factor-name-group';
+    nameEl.replaceWith(group);
+    group.appendChild(nameEl);
+    const warn = document.createElement('span');
+    warn.className = 'factor-warn';
+    warn.setAttribute('tabindex', '0');
+    warn.setAttribute('aria-label', WARNING_TIP);
+    warn.innerHTML = WARNING_SVG + '<span class="factor-tooltip">' + WARNING_TIP + '</span>';
+    group.appendChild(warn);
+  });
+})();
 
 // Road-facing camera default weight map (sums to 100).
 // Dual-facing is the current default and is restored from the saved view-mode weighting.
