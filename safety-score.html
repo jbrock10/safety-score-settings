@@ -1762,20 +1762,20 @@
             <span class="view-only">100 points</span>
             <span class="edit-only score-alloc"><span class="alloc-used" id="alloc-used">100</span> / 100 <span class="alloc-label">points allocated</span></span>
           </div>
-          <div class="factor-row"><span class="factor-name">Cell phone</span><span class="donut" style="--pct:16;"><span>16</span></span></div>
-          <div class="factor-row"><span class="factor-name">Tailgating</span><span class="donut" style="--pct:14;"><span>14</span></span></div>
-          <div class="factor-row"><span class="factor-name">Stop sign violation</span><span class="donut" style="--pct:11;"><span>11</span></span></div>
-          <div class="factor-row"><span class="factor-name">Seat belt violation</span><span class="donut" style="--pct:10;"><span>10</span></span></div>
+          <div class="factor-row"><span class="factor-name">Cell phone usage</span><span class="donut" style="--pct:16;"><span>16</span></span></div>
+          <div class="factor-row"><span class="factor-name">Close following</span><span class="donut" style="--pct:14;"><span>14</span></span></div>
+          <div class="factor-row"><span class="factor-name">Stop sign violations</span><span class="donut" style="--pct:11;"><span>11</span></span></div>
+          <div class="factor-row"><span class="factor-name">Seat belt violations</span><span class="donut" style="--pct:10;"><span>10</span></span></div>
           <div class="factor-row"><span class="factor-name">Speeding</span><span class="donut" style="--pct:10;"><span>10</span></span></div>
           <div class="factor-row"><span class="factor-name">Distraction</span><span class="donut" style="--pct:8;"><span>8</span></span></div>
-          <div class="factor-row"><span class="factor-name">Hard brake</span><span class="donut" style="--pct:6;"><span>6</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard braking</span><span class="donut" style="--pct:6;"><span>6</span></span></div>
           <div class="factor-row"><span class="factor-name">Forward collision warning</span><span class="donut" style="--pct:5;"><span>5</span></span></div>
-          <div class="factor-row"><span class="factor-name">Unsafe lane change</span><span class="donut" style="--pct:5;"><span>5</span></span></div>
-          <div class="factor-row"><span class="factor-name">Cam obstruction</span><span class="donut" style="--pct:4;"><span>4</span></span></div>
-          <div class="factor-row"><span class="factor-name">Hard corner</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
+          <div class="factor-row"><span class="factor-name">Unsafe lane changing</span><span class="donut" style="--pct:5;"><span>5</span></span></div>
+          <div class="factor-row"><span class="factor-name">Camera obstruction</span><span class="donut" style="--pct:4;"><span>4</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard cornering</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
           <div class="factor-row"><span class="factor-name">Smoking</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
           <div class="factor-row"><span class="factor-name">Unsafe parking</span><span class="donut" style="--pct:3;"><span>3</span></span></div>
-          <div class="factor-row"><span class="factor-name">Hard accel</span><span class="donut" style="--pct:2;"><span>2</span></span></div>
+          <div class="factor-row"><span class="factor-name">Hard accelerating</span><span class="donut" style="--pct:2;"><span>2</span></span></div>
         </div>
       </div>
 
@@ -1958,10 +1958,10 @@ const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" s
 // Road-facing camera default weight map (sums to 100).
 // Dual-facing is the current default and is restored from the saved view-mode weighting.
 const ROAD_DEFAULT = {
-  'Cell phone': 0, 'Tailgating': 20, 'Stop sign violation': 14, 'Seat belt violation': 0,
-  'Speeding': 18, 'Distraction': 0, 'Hard brake': 12, 'Forward collision warning': 10,
-  'Unsafe lane change': 10, 'Cam obstruction': 0, 'Hard corner': 6, 'Smoking': 0,
-  'Unsafe parking': 6, 'Hard accel': 4
+  'Cell phone usage': 0, 'Close following': 20, 'Stop sign violations': 14, 'Seat belt violations': 0,
+  'Speeding': 18, 'Distraction': 0, 'Hard braking': 12, 'Forward collision warning': 10,
+  'Unsafe lane changing': 10, 'Camera obstruction': 0, 'Hard cornering': 6, 'Smoking': 0,
+  'Unsafe parking': 6, 'Hard accelerating': 4
 };
 
 // Performance range boundaries (saved = source of truth; edit = working copy)
