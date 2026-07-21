@@ -618,6 +618,18 @@
     align-items: center;
   }
 
+  /* locked view-mode empty state (centered) */
+  .ct-empty-state {
+    padding: 40px 40px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--content-subdued);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
   /* add button row */
   .add-tag-row {
     padding: 8px 20px;
@@ -1030,11 +1042,11 @@
   </div>
   <nav class="proto-sidebar-nav">
     <div class="proto-option active" data-option="1" onclick="selectProtoOption(1)">
-      <span class="proto-option-label">Option 1</span>
+      <span class="proto-option-label">Happy path</span>
       <span class="proto-option-number">1</span>
     </div>
     <div class="proto-option" data-option="2" onclick="selectProtoOption(2)">
-      <span class="proto-option-label">Option 2</span>
+      <span class="proto-option-label">With errors</span>
       <span class="proto-option-number">2</span>
     </div>
   </nav>
@@ -1698,19 +1710,17 @@
         </div>
       </div>
 
-      <!-- CARD 4: CUSTOM TAGS (FUNCTIONAL) -->
+      <!-- CARD 4: CUSTOM TAGS (LOCKED VIEW MODE) -->
       <div class="card" id="custom-tags-card">
         <div class="card-header" id="ct-header">
-          <span class="card-title">[→Custom Tags]</span>
+          <span class="card-title">Custom tags</span>
           <div class="card-header-actions" id="ct-header-actions">
-            <button class="btn" id="ct-edit-btn" onclick="enterEditMode()">Edit</button>
+            <button class="btn">Edit</button>
           </div>
         </div>
         <div class="card-content" id="ct-content">
-          <div class="desc-row">[→Use custom tags for better event classification and reporting.]</div>
-          <div class="divider"></div>
           <div id="ct-view-area">
-            <!-- Populated by JS -->
+            <!-- Populated by JS (locked view mode) -->
           </div>
         </div>
       </div>
@@ -1836,11 +1846,11 @@ function renderView() {
   card.classList.remove('edit-mode');
 
   document.getElementById('ct-header-actions').innerHTML =
-    `<button class="btn" onclick="enterEditMode()">Edit</button>`;
+    `<button class="btn">Edit</button>`;
 
   const area = document.getElementById('ct-view-area');
   if (savedTags.length === 0) {
-    area.innerHTML = `<div class="empty-state">No custom tags added.</div>`;
+    area.innerHTML = `<div class="ct-empty-state">No custom tags have been added yet. Use custom tags to apply meaningful information to events.</div>`;
     return;
   }
 
