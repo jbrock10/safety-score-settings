@@ -648,7 +648,7 @@
     margin: 0 auto;
   }
 
-  /* ─── SAFETY HUB ──────────────────────────��────────────────── */
+  /* ─── SAFETY HUB ──────────────────────────���────────────────── */
   .header-action {
     margin-left: auto;
     width: 40px;
@@ -1993,7 +1993,23 @@ function selectProtoOption(n) {
     el.classList.toggle('active', parseInt(el.dataset.option) === n);
   });
   // Option 2 = "With errors" flow: reveal config-error warning icons
-  document.querySelector('.motive-ui').classList.toggle('errors-flow', n === 2);
+  // and default the positive factors to enabled (some bonus points awarded).
+  const errors = n === 2;
+  document.querySelector('.motive-ui').classList.toggle('errors-flow', errors);
+  applyFlowPositives(errors);
+}
+
+// Positive factors default to enabled bonus points in the "with errors" flow,
+// and to [Inactive] in the happy path.
+function applyFlowPositives(errors) {
+  document.querySelectorAll('.pos-row').forEach(row => {
+    const v = errors ? 0.5 : 0;
+    row.dataset.value = v;
+    const val = row.querySelector('.pos-value');
+    if (!val) return;
+    val.textContent = v === 0 ? '[Inactive]' : '+' + v.toFixed(1) + ' point per event';
+    val.style.color = v === 0 ? 'var(--content-inactive)' : 'var(--content-standard)';
+  });
 }
 
 // ─── VERSION HISTORY ACCORDION (one open at a time) ───────────────────────────
@@ -2014,10 +2030,10 @@ const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" s
 // Flags behaviors that are factored into the score but have event detection disabled.
 const WARNING_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.49991 10V6H8.49991V10H7.49991Z" fill="#9F4100"/><path d="M7.49991 12V11H8.49991V12H7.49991Z" fill="#9F4100"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.28065 2.7377C8.69562 1.7798 7.30434 1.78022 6.7199 2.73849L1.23053 11.7389C0.620892 12.7385 1.34034 14.02 2.51114 14.02H13.4974C14.6686 14.02 15.388 12.7377 14.7776 11.7382L9.28065 2.7377ZM7.57364 3.25918C7.76846 2.93976 8.23221 2.93962 8.42722 3.25892L13.9241 12.2594C14.1276 12.5926 13.8878 13.02 13.4974 13.02H2.51114C2.12087 13.02 1.88106 12.5928 2.08427 12.2596L7.57364 3.25918Z" fill="#9F4100"/></svg>';
 const WARNING_TIP = '[This behavior is factored into the score but currently has event detection disabled.]';
-const WARNING_BEHAVIORS = ['Stop sign violations', 'Forward collision warning', 'Hard accelerating'];
+const WARNING_BEHAVIORS = ['Stop sign violations', 'Forward collision warning', 'Hard accelerating', 'Safe distancing'];
 
 (function initFactorWarnings() {
-  document.querySelectorAll('.factor-row .factor-name').forEach(nameEl => {
+  document.querySelectorAll('.factor-row .factor-name, .pos-row .pos-name').forEach(nameEl => {
     if (!WARNING_BEHAVIORS.includes(nameEl.textContent.trim())) return;
     const group = document.createElement('div');
     group.className = 'factor-name-group';
