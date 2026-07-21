@@ -815,6 +815,142 @@
   .legend-name { color: var(--content-emphasis); }
   .legend-range { color: var(--content-standard); font-feature-settings: 'tnum' 1; }
 
+  /* ─── EDIT MODE ────────────────────────────────────────────── */
+  .edit-only { display: none; }
+  .motive-ui.editing .view-only { display: none; }
+
+  /* blue header */
+  .header-view {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
+  .header-edit { display: none; }
+  .motive-ui.editing .header {
+    background: var(--bg-bold-active);
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2), 0px 0px 0px 1px rgba(0,0,0,0.06);
+  }
+  .motive-ui.editing .header .header-view { display: none; }
+  .motive-ui.editing .header .header-edit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+  }
+  .header-edit-title {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    color: var(--content-on-bold);
+  }
+  .header-edit-actions { display: flex; align-items: center; gap: 12px; }
+
+  /* preset button rows */
+  .motive-ui.editing .preset-row { display: flex; }
+  .preset-row {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 20px 8px;
+  }
+
+  /* factor + positive steppers */
+  .factor-stepper { display: none; align-items: center; gap: 12px; }
+  .motive-ui.editing .factor-stepper { display: flex; }
+  .step-btn {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--content-subdued);
+    font-family: inherit;
+  }
+  .step-btn:hover { color: var(--content-emphasis); }
+  .step-btn:disabled { color: var(--content-inactive); cursor: not-allowed; }
+  .step-val {
+    min-width: 48px;
+    height: 36px;
+    padding: 0 8px;
+    border: 1px solid var(--stroke-standard);
+    border-radius: var(--radius-s);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--content-emphasis);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* generic edit-only element types */
+  .motive-ui.editing p.edit-only { display: block; }
+  .motive-ui.editing span.score-alloc.edit-only { display: inline; }
+
+  /* score total alloc */
+  .score-alloc .alloc-used.over { color: var(--content-negative); }
+  .alloc-label { font-weight: 400; }
+
+  /* performance ranges edit */
+  .motive-ui.editing .range-edit { display: block; }
+  .range-edit { display: none; padding: 12px 20px 4px; }
+  .range-edit-bar {
+    position: relative;
+    display: flex;
+    height: 56px;
+    border-radius: 4px;
+    overflow: visible;
+    margin-top: 4px;
+    touch-action: none;
+    user-select: none;
+  }
+  .reseg {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 12px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .reseg:first-child { border-radius: 4px 0 0 4px; }
+  .reseg:last-child { border-radius: 0 4px 4px 0; }
+  .reseg-fair { background: #f76100; }
+  .reseg-good { background: #00b4ff; }
+  .reseg-excellent { background: #003aa5; }
+  .reseg-label { font-size: 14px; font-weight: 600; line-height: 20px; color: var(--content-on-bold); }
+  .reseg-sub { font-size: 12px; line-height: 16px; color: var(--content-on-bold); font-feature-settings: 'tnum' 1; }
+  .range-handle {
+    position: absolute;
+    top: -2px;
+    height: 60px;
+    width: 4px;
+    background: var(--bg-primary);
+    transform: translateX(-50%);
+    cursor: ew-resize;
+    z-index: 2;
+  }
+  .range-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transform: translate(-50%, -50%);
+  }
+
   /* version history */
   .version-entry { position: relative; }
   .version-entry + .version-entry::before {
@@ -1580,13 +1716,22 @@
 <!-- MAIN CONTENT -->
 <div class="main">
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-breadcrumb">
-      <a class="crumb-parent" href="index.html">Safety</a>
-      <span class="crumb-sep">/</span>
-      <span class="crumb-current">Safety Score</span>
+  <header class="header" id="page-header">
+    <div class="header-view">
+      <div class="header-breadcrumb">
+        <a class="crumb-parent" href="index.html">Safety</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">Safety Score</span>
+      </div>
+      <button class="btn btn-primary" type="button" onclick="enterEditMode()">Edit</button>
     </div>
-    <button class="btn btn-primary" type="button">Edit</button>
+    <div class="header-edit">
+      <span class="header-edit-title">Edit Safety Score</span>
+      <div class="header-edit-actions">
+        <button class="btn btn-on-dark" type="button" onclick="exitEditMode(false)">Cancel</button>
+        <button class="btn btn-save" type="button" onclick="exitEditMode(true)">Save</button>
+      </div>
+    </div>
   </header>
 
   <!-- SCROLLABLE CONTENT -->
@@ -1599,10 +1744,17 @@
           <span class="card-title">[Unsafe score factors]</span>
         </div>
         <div class="card-content">
-          <p class="factor-desc">[Define which unsafe behaviors impact scores by assigning point weights. Higher point values represent a bigger impact on the score.]</p>
+          <p class="factor-desc view-only">[Define which unsafe behaviors impact scores by assigning point weights. Higher point values represent a bigger impact on the score.]</p>
+          <p class="factor-desc edit-only">[Distribute the impact of unsafe behaviors. Higher weights mean that specific behavior will have a larger influence on a driver&apos;s final score.]</p>
+          <div class="preset-row edit-only">
+            <button class="btn" type="button" onclick="applyCameraDefault('dual')">Dual-facing camera default</button>
+            <button class="btn" type="button" onclick="applyCameraDefault('road')">Road-facing camera default</button>
+            <button class="btn" type="button" onclick="revertFactors()">Revert</button>
+          </div>
           <div class="score-total-row">
             <span>Score total</span>
-            <span>100 points</span>
+            <span class="view-only">100 points</span>
+            <span class="edit-only score-alloc"><span class="alloc-used" id="alloc-used">100</span> / 100 <span class="alloc-label">points allocated</span></span>
           </div>
           <div class="factor-row"><span class="factor-name">Cell phone</span><span class="donut" style="--pct:16;"><span>16</span></span></div>
           <div class="factor-row"><span class="factor-name">Tailgating</span><span class="donut" style="--pct:14;"><span>14</span></span></div>
@@ -1628,8 +1780,8 @@
         </div>
         <div class="card-content">
           <p class="factor-desc">[Incentivize safe driving by awarding bonus points when drivers demonstrate positive driving behaviors.]</p>
-          <div class="pos-row"><span class="pos-name">Alert driving</span><span class="pos-value">[Inactive]</span></div>
-          <div class="pos-row"><span class="pos-name">Safe distancing</span><span class="pos-value">[Inactive]</span></div>
+          <div class="pos-row" data-value="0"><span class="pos-name">Alert driving</span><span class="pos-value view-only">[Inactive]</span></div>
+          <div class="pos-row" data-value="0"><span class="pos-name">Safe distancing</span><span class="pos-value view-only">[Inactive]</span></div>
         </div>
       </div>
 
@@ -1639,8 +1791,9 @@
           <span class="card-title">Performance ranges</span>
         </div>
         <div class="card-content">
-          <p class="factor-desc">Each block represents a performance range and the scores that fall within it.</p>
-          <div class="range-wrap">
+          <p class="factor-desc view-only">Each block represents a performance range and the scores that fall within it.</p>
+          <p class="factor-desc edit-only">[Drag the handles to adjust where each performance range begins and ends.]</p>
+          <div class="range-wrap view-only">
             <div class="range-labels">
               <span style="width:55.5%;">Fair</span>
               <span style="width:28%;">Good</span>
@@ -1650,6 +1803,23 @@
               <span class="range-seg-fair" style="width:55.5%;"></span>
               <span class="range-seg-good" style="width:28%;"></span>
               <span class="range-seg-excellent" style="width:16.5%;"></span>
+            </div>
+            <div class="range-axis">
+              <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+            </div>
+          </div>
+          <div class="range-edit edit-only">
+            <div class="preset-row" style="padding:0 0 12px;">
+              <button class="btn" type="button" onclick="rangePreset('motive')">Set to Motive Default</button>
+              <button class="btn" type="button" onclick="rangePreset('equal')">Split equally</button>
+              <button class="btn" type="button" onclick="rangePreset('reset')">Reset</button>
+            </div>
+            <div class="range-edit-bar" id="range-edit-bar">
+              <div class="reseg reseg-fair" id="reseg-fair"><span class="reseg-label">Fair</span><span class="reseg-sub" id="reseg-sub-fair">0 &ndash; 55</span></div>
+              <div class="reseg reseg-good" id="reseg-good"><span class="reseg-label">Good</span><span class="reseg-sub" id="reseg-sub-good">56 &ndash; 83</span></div>
+              <div class="reseg reseg-excellent" id="reseg-excellent"><span class="reseg-label">Excellent</span><span class="reseg-sub" id="reseg-sub-exc">84+</span></div>
+              <div class="range-handle" id="range-handle-1" onpointerdown="startRangeDrag(event,1)"></div>
+              <div class="range-handle" id="range-handle-2" onpointerdown="startRangeDrag(event,2)"></div>
             </div>
             <div class="range-axis">
               <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
@@ -1772,6 +1942,210 @@ function toggleVersion(head) {
   const isOpen = entry.classList.contains('open');
   document.querySelectorAll('#version-list .version-entry').forEach(el => el.classList.remove('open'));
   if (!isOpen) entry.classList.add('open');
+}
+
+// ─── EDIT MODE ────────────────────────────────────────────────────────────────
+const DASH = ' \u2013 '; // en dash
+
+// Camera-default weight maps (each sums to 100)
+const DUAL_DEFAULT = {
+  'Cell phone': 16, 'Tailgating': 14, 'Stop sign violation': 11, 'Seat belt violation': 10,
+  'Speeding': 10, 'Distraction': 8, 'Hard brake': 6, 'Forward collision warning': 5,
+  'Unsafe lane change': 5, 'Cam obstruction': 4, 'Hard corner': 3, 'Smoking': 3,
+  'Unsafe parking': 3, 'Hard accel': 2
+};
+const ROAD_DEFAULT = {
+  'Cell phone': 0, 'Tailgating': 20, 'Stop sign violation': 14, 'Seat belt violation': 0,
+  'Speeding': 18, 'Distraction': 0, 'Hard brake': 12, 'Forward collision warning': 10,
+  'Unsafe lane change': 10, 'Cam obstruction': 0, 'Hard corner': 6, 'Smoking': 0,
+  'Unsafe parking': 6, 'Hard accel': 4
+};
+
+// Performance range boundaries (saved = source of truth; edit = working copy)
+let savedB1 = 55, savedB2 = 83;
+let editB1 = 55, editB2 = 83;
+let factorSnapshot = {};
+
+function buildEditWidgets() {
+  // unsafe factor steppers
+  document.querySelectorAll('.factor-row').forEach(row => {
+    if (row.querySelector('.factor-stepper')) return;
+    const donut = row.querySelector('.donut');
+    donut.classList.add('view-only');
+    const st = document.createElement('span');
+    st.className = 'factor-stepper';
+    st.innerHTML = '<button class="step-btn" type="button">\u2212</button>'
+      + '<span class="step-val">0</span>'
+      + '<button class="step-btn" type="button">+</button>';
+    st.children[0].addEventListener('click', () => stepFactor(row, -1));
+    st.children[2].addEventListener('click', () => stepFactor(row, 1));
+    row.appendChild(st);
+  });
+  // positive steppers (0.5 increments)
+  document.querySelectorAll('.pos-row').forEach(row => {
+    if (row.querySelector('.factor-stepper')) return;
+    const st = document.createElement('span');
+    st.className = 'factor-stepper';
+    st.innerHTML = '<button class="step-btn" type="button">\u2212</button>'
+      + '<span class="step-val">0.0</span>'
+      + '<button class="step-btn" type="button">+</button>';
+    st.children[0].addEventListener('click', () => stepPositive(row, -0.5));
+    st.children[2].addEventListener('click', () => stepPositive(row, 0.5));
+    row.appendChild(st);
+  });
+}
+
+function syncSteppersFromView() {
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const v = parseInt(row.querySelector('.donut span').textContent, 10) || 0;
+    row.querySelector('.step-val').textContent = v;
+  });
+  document.querySelectorAll('.pos-row').forEach(row => {
+    const v = parseFloat(row.dataset.value) || 0;
+    row.querySelector('.step-val').textContent = v.toFixed(1);
+  });
+  updateAlloc();
+}
+
+function stepFactor(row, delta) {
+  const el = row.querySelector('.step-val');
+  let v = (parseInt(el.textContent, 10) || 0) + delta;
+  if (v < 0) v = 0;
+  el.textContent = v;
+  updateAlloc();
+}
+
+function stepPositive(row, delta) {
+  const el = row.querySelector('.step-val');
+  let v = (parseFloat(el.textContent) || 0) + delta;
+  if (v < 0) v = 0;
+  el.textContent = v.toFixed(1);
+}
+
+function updateAlloc() {
+  let sum = 0;
+  document.querySelectorAll('.factor-row .step-val').forEach(el => {
+    sum += parseInt(el.textContent, 10) || 0;
+  });
+  const used = document.getElementById('alloc-used');
+  used.textContent = sum;
+  used.classList.toggle('over', sum !== 100);
+}
+
+function applyCameraDefault(type) {
+  const map = type === 'road' ? ROAD_DEFAULT : DUAL_DEFAULT;
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const name = row.querySelector('.factor-name').textContent.trim();
+    if (name in map) row.querySelector('.step-val').textContent = map[name];
+  });
+  updateAlloc();
+}
+
+function snapshotFactors() {
+  factorSnapshot = {};
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const name = row.querySelector('.factor-name').textContent.trim();
+    factorSnapshot[name] = parseInt(row.querySelector('.step-val').textContent, 10) || 0;
+  });
+}
+
+function revertFactors() {
+  document.querySelectorAll('.factor-row').forEach(row => {
+    const name = row.querySelector('.factor-name').textContent.trim();
+    if (name in factorSnapshot) row.querySelector('.step-val').textContent = factorSnapshot[name];
+  });
+  updateAlloc();
+}
+
+// ── performance range editing ──
+function renderRangeEdit() {
+  const s1 = editB1 + 0.5, s2 = editB2 + 0.5;
+  document.getElementById('reseg-fair').style.width = s1 + '%';
+  document.getElementById('reseg-good').style.width = (s2 - s1) + '%';
+  document.getElementById('reseg-excellent').style.width = (100 - s2) + '%';
+  document.getElementById('reseg-sub-fair').textContent = '0' + DASH + editB1;
+  document.getElementById('reseg-sub-good').textContent = (editB1 + 1) + DASH + editB2;
+  document.getElementById('reseg-sub-exc').textContent = (editB2 + 1) + '+';
+  document.getElementById('range-handle-1').style.left = s1 + '%';
+  document.getElementById('range-handle-2').style.left = s2 + '%';
+}
+
+let dragHandle = null;
+function startRangeDrag(e, which) {
+  dragHandle = which;
+  e.preventDefault();
+  window.addEventListener('pointermove', onRangeDrag);
+  window.addEventListener('pointerup', endRangeDrag);
+}
+function onRangeDrag(e) {
+  if (!dragHandle) return;
+  const bar = document.getElementById('range-edit-bar');
+  const r = bar.getBoundingClientRect();
+  let pct = (e.clientX - r.left) / r.width * 100;
+  let v = Math.round(Math.max(0, Math.min(100, pct)));
+  if (dragHandle === 1) { editB1 = Math.max(1, Math.min(editB2 - 1, v)); }
+  else { editB2 = Math.max(editB1 + 1, Math.min(99, v)); }
+  renderRangeEdit();
+}
+function endRangeDrag() {
+  dragHandle = null;
+  window.removeEventListener('pointermove', onRangeDrag);
+  window.removeEventListener('pointerup', endRangeDrag);
+}
+
+function rangePreset(kind) {
+  if (kind === 'equal') { editB1 = 33; editB2 = 66; }
+  else if (kind === 'reset') { editB1 = savedB1; editB2 = savedB2; }
+  else { editB1 = 55; editB2 = 83; } // motive default
+  renderRangeEdit();
+}
+
+function applyRangesToView() {
+  savedB1 = editB1; savedB2 = editB2;
+  const s1 = savedB1 + 0.5, s2 = savedB2 + 0.5;
+  const lbls = document.querySelectorAll('.range-wrap .range-labels span');
+  lbls[0].style.width = s1 + '%';
+  lbls[1].style.width = (s2 - s1) + '%';
+  lbls[2].style.width = (100 - s2) + '%';
+  document.querySelector('.range-seg-fair').style.width = s1 + '%';
+  document.querySelector('.range-seg-good').style.width = (s2 - s1) + '%';
+  document.querySelector('.range-seg-excellent').style.width = (100 - s2) + '%';
+  const legs = document.querySelectorAll('.legend-range');
+  legs[0].textContent = '0' + DASH + savedB1;
+  legs[1].textContent = (savedB1 + 1) + DASH + savedB2;
+  legs[2].textContent = (savedB2 + 1) + DASH + '100';
+}
+
+function enterEditMode() {
+  buildEditWidgets();
+  syncSteppersFromView();
+  editB1 = savedB1; editB2 = savedB2;
+  renderRangeEdit();
+  snapshotFactors();
+  document.querySelector('.motive-ui').classList.add('editing');
+  document.querySelector('.content-scroll').scrollTop = 0;
+}
+
+function exitEditMode(save) {
+  if (save) {
+    // unsafe factors -> donuts
+    document.querySelectorAll('.factor-row').forEach(row => {
+      const v = parseInt(row.querySelector('.step-val').textContent, 10) || 0;
+      const donut = row.querySelector('.donut');
+      donut.style.setProperty('--pct', v);
+      donut.querySelector('span').textContent = v;
+    });
+    // positive factors -> value labels
+    document.querySelectorAll('.pos-row').forEach(row => {
+      const v = parseFloat(row.querySelector('.step-val').textContent) || 0;
+      row.dataset.value = v;
+      const val = row.querySelector('.pos-value');
+      val.textContent = v === 0 ? '[Inactive]' : '+' + v.toFixed(1) + ' point per event';
+      val.style.color = v === 0 ? 'var(--content-inactive)' : 'var(--content-standard)';
+    });
+    applyRangesToView();
+  }
+  document.querySelector('.motive-ui').classList.remove('editing');
 }
 </script>
 
