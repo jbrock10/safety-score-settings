@@ -864,11 +864,11 @@
   }
 
   /* factor + positive steppers */
-  .factor-stepper { display: none; align-items: center; gap: 12px; }
+  .factor-stepper { display: none; align-items: center; gap: 8px; }
   .motive-ui.editing .factor-stepper { display: flex; }
   .step-btn {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     padding: 0;
     border: none;
     background: none;
@@ -876,10 +876,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--content-subdued);
+    color: var(--content-emphasis);
     font-family: inherit;
   }
-  .step-btn:hover { color: var(--content-emphasis); }
+  .step-btn svg { display: block; }
+  .step-btn:hover { color: var(--content-active); }
   .step-btn:disabled { color: var(--content-inactive); cursor: not-allowed; }
   .step-val {
     width: 52px;
@@ -1951,6 +1952,8 @@ function toggleVersion(head) {
 
 // ─── EDIT MODE ────────────────────────────────────────────────────────────────
 const DASH = ' \u2013 '; // en dash
+const STEP_MINUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/></svg>';
+const STEP_PLUS = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="8" x2="13" y2="8"/><line x1="8" y1="3" x2="8" y2="13"/></svg>';
 
 // Camera-default weight maps (each sums to 100)
 const DUAL_DEFAULT = {
@@ -1979,9 +1982,9 @@ function buildEditWidgets() {
     donut.classList.add('view-only');
     const st = document.createElement('span');
     st.className = 'factor-stepper';
-    st.innerHTML = '<button class="step-btn" type="button">\u2212</button>'
+    st.innerHTML = '<button class="step-btn" type="button" aria-label="Decrease">' + STEP_MINUS + '</button>'
       + '<span class="step-val">0</span>'
-      + '<button class="step-btn" type="button">+</button>';
+      + '<button class="step-btn" type="button" aria-label="Increase">' + STEP_PLUS + '</button>';
     st.children[0].addEventListener('click', () => stepFactor(row, -1));
     st.children[2].addEventListener('click', () => stepFactor(row, 1));
     row.appendChild(st);
@@ -1991,9 +1994,9 @@ function buildEditWidgets() {
     if (row.querySelector('.factor-stepper')) return;
     const st = document.createElement('span');
     st.className = 'factor-stepper';
-    st.innerHTML = '<button class="step-btn" type="button">\u2212</button>'
+    st.innerHTML = '<button class="step-btn" type="button" aria-label="Decrease">' + STEP_MINUS + '</button>'
       + '<span class="step-val">0.0</span>'
-      + '<button class="step-btn" type="button">+</button>';
+      + '<button class="step-btn" type="button" aria-label="Increase">' + STEP_PLUS + '</button>';
     st.children[0].addEventListener('click', () => stepPositive(row, -0.5));
     st.children[2].addEventListener('click', () => stepPositive(row, 0.5));
     row.appendChild(st);
