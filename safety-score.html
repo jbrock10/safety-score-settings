@@ -903,7 +903,7 @@
   .motive-ui.editing span.score-alloc.edit-only { display: inline; }
 
   /* score total alloc */
-  .score-alloc .alloc-used.over { color: var(--content-negative); }
+  .score-alloc.over { color: var(--content-negative); }
   .alloc-label { font-weight: 400; }
 
   /* performance ranges edit */
@@ -2037,8 +2037,11 @@ function updateAlloc() {
   });
   const used = document.getElementById('alloc-used');
   used.textContent = sum;
-  used.classList.toggle('over', sum !== 100);
-}
+  const invalid = sum !== 100;
+  document.querySelector('.score-alloc').classList.toggle('over', invalid);
+  const saveBtn = document.querySelector('.header-edit .btn-save');
+  if (saveBtn) saveBtn.disabled = invalid;
+  }
 
 function applyCameraDefault(type) {
   const map = type === 'road' ? ROAD_DEFAULT : DUAL_DEFAULT;
