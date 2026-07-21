@@ -689,11 +689,19 @@
   }
 
   .factor-row {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 10px 20px;
+  }
+  .factor-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
     border-top: 1px solid var(--stroke-inactive);
   }
 
@@ -735,6 +743,7 @@
 
   /* positive score factors */
   .pos-row {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -742,6 +751,14 @@
     padding: 12px 20px;
     font-size: 14px;
     line-height: 20px;
+  }
+  .pos-row + .pos-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
   }
   .pos-name { color: var(--content-standard); }
   .pos-value { color: var(--content-standard); }
@@ -776,14 +793,22 @@
   }
 
   .legend-row {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 10px 20px;
-    border-top: 1px solid var(--stroke-inactive);
     font-size: 14px;
     line-height: 20px;
+  }
+  .legend-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
   }
   .legend-left { display: flex; align-items: center; gap: 8px; }
   .legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
@@ -791,8 +816,15 @@
   .legend-range { color: var(--content-standard); font-feature-settings: 'tnum' 1; }
 
   /* version history */
-  .version-entry { border-top: 1px solid var(--stroke-inactive); }
-  .version-entry:first-child { border-top: none; }
+  .version-entry { position: relative; }
+  .version-entry + .version-entry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    border-top: 1px solid var(--stroke-inactive);
+  }
   .version-head {
     display: flex;
     align-items: center;
